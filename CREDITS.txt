@@ -1,0 +1,7 @@
+Pint's New Character Setup - by Jake (Pint's Add-ons), built with Claude.
+
+"Used in" data (ReagentData.lua): generated from the recipe data in SkillUp Forever by cjber
+(https://github.com/cjber/skillup-forever, GPL-3.0-or-later), which is built from the WoW: Forever
+client tables via wago.tools. Thank you!
+
+World of Warcraft names and game data are the property of Blizzard Entertainment.

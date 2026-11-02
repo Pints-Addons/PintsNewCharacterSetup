@@ -1,0 +1,9 @@
+Pint's New Character Setup - Changelog
+
+v1.0
+- First public release. Combines four small add-ons (Auto Loot On, Chat Class Colors, Cooldown Style, Stack Size).
+- Every new character starts with your chosen defaults: Auto Loot, cooldown numbers, class-coloured chat names,
+  Target of Target, maximum camera distance, quest tracking and (optionally) loot window at mouse.
+- Options page (/setup) to choose the defaults, plus "Apply to this character now".
+- Large, outlined cooldown numbers with adjustable size and colour.
+- "Stacks to" and "Used in" lines on item tooltips, each switchable.
