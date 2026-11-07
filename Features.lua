@@ -23,19 +23,53 @@ local function IsActionButtonCooldown(cd)
 		or name:find("PintsBars")
 end
 
+-- The size depends on how long the number is: 1-2 characters ("9", "45") at your full size; 3 or more ("56m",
+-- "1:26") a size down, so they still fit on the button. Checked a few times a second while a cooldown runs.
+local SHORT_MAX = 2
+local function Sizes(cd)
+	local size = Look()
+	local w = cd.GetWidth and cd:GetWidth() or 0
+	local small = math.floor(size * 0.65 + 0.5)
+	if w and w > 0 then small = math.min(small, math.floor(w * 0.5)) end
+	return size, math.max(9, small)
+end
+local function FitText(cd, reg)
+	local t = reg:GetText()
+	if type(t) ~= "string" or (issecretvalue and issecretvalue(t)) then return end
+	local big, small = Sizes(cd)
+	local want = (#t <= SHORT_MAX) and big or small
+	if reg.pnsSize ~= want then reg.pnsSize = want; reg:SetFont(STANDARD_TEXT_FONT, want, FLAGS) end
+end
 local function StyleRegions(cd)
 	local size, r, g, b = Look()
-	-- never bigger than fits the button: "1:26" in the full size spilled well past small action buttons
-	local w = cd.GetWidth and cd:GetWidth() or 0
-	if w and w > 0 then size = math.max(8, math.min(size, math.floor(w * 0.36))) end
 	for _, reg in ipairs({ cd:GetRegions() }) do
 		if reg.GetObjectType and reg:GetObjectType() == "FontString" then
+			reg.pnsSize = size
 			reg:SetFont(STANDARD_TEXT_FONT, size, FLAGS)
 			reg:SetTextColor(r, g, b)
 			reg:SetShadowColor(0, 0, 0, 1)
 			reg:SetShadowOffset(2, -2)
+			FitText(cd, reg)
 		end
 	end
+end
+-- (the game writes the countdown itself, without telling add-ons: so look at the running ones a few times a second)
+do
+	local acc = 0
+	local tick = CreateFrame("Frame")
+	tick:SetScript("OnUpdate", function(_, el)
+		acc = acc + el
+		if acc < 0.2 then return end
+		acc = 0
+		if not (PintsSetupDB and PintsSetupDB.cdStyle) then return end
+		for cd in pairs(styled) do
+			if cd:IsVisible() then
+				for _, reg in ipairs({ cd:GetRegions() }) do
+					if reg.GetObjectType and reg:GetObjectType() == "FontString" and reg:IsShown() then FitText(cd, reg) end
+				end
+			end
+		end
+	end)
 end
 
 local function Style(cd)

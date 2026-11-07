@@ -1,5 +1,9 @@
 Pint's New Character Setup - Changelog
 
+v1.0.3
+- Cooldown numbers back to your full size for 1-2 characters ("9", "45"); 3 or more ("56m", "1:26") a size down so they
+  fit on the button.
+
 v1.0.2
 - New default "Left-click only targets": left-clicking a mob or corpse targets it, right-click loots and talks
   (WoW Forever looted and talked on left-click). Given once to existing characters too.
