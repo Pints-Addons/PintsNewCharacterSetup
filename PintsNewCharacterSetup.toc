@@ -3,7 +3,7 @@
 ## Notes: Every new character starts with default settings that make sense - Auto Loot, cooldown numbers, class-coloured chat names, Target of Target and more - plus big cooldown numbers and "Stacks to" / "Used in" tooltip lines. Choose the defaults with /setup.
 ## Author: Jake (Pint's Add-ons, built with Claude)
 ## X-License: GPL-3.0
-## Version: 1.0.1
+## Version: 1.0.2
 ## X-Curse-Project-ID: 1779472
 ## SavedVariables: PintsSetupDB
 ## SavedVariablesPerCharacter: PintsSetupCharDB

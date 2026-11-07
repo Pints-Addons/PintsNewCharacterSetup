@@ -14,6 +14,7 @@ local CHAR = {
 	{ "tot", "Target of Target", "Shows who your target is targeting, under the target frame.", true, { cvar = "showTargetOfTarget" } },
 	{ "camera", "Maximum camera distance", "Lets you zoom the camera out further than the game's default.", true, { cvar = "cameraDistanceMaxZoomFactor", value = "2.6" } },
 	{ "questTrack", "Track quests when accepted", "New quests go straight onto your quest tracker.", true, { cvar = "autoQuestWatch" } },
+	{ "leftClickTarget", "Left-click only targets", "Left-clicking a mob (or a corpse) just targets it; right-click attacks, talks and loots. (WoW Forever's own default loots and talks on left-click too.)", true, { cvar = "interactOnLeftClick", value = "0" } },
 	{ "lootMouse", "Open loot window at mouse", "The loot window opens where your cursor is, not in the corner.", false, { cvar = "lootUnderMouse" } },
 }
 NS.CHAR = CHAR
@@ -96,6 +97,15 @@ f:SetScript("OnEvent", function(self, event, arg)
 	elseif event == "PLAYER_LOGIN" then
 		-- a character's first login with this add-on: give it the defaults
 		if not PintsSetupCharDB.setUp then NS.ApplyDefaults() end
+		-- 1.0.1: "left-click only targets" is new - give it once to characters set up before it existed
+		if not PintsSetupCharDB.leftClickDone then
+			PintsSetupCharDB.leftClickDone = true
+			for _, s in ipairs(CHAR) do
+				if s[1] == "leftClickTarget" and DB().char[s[1]] and TurnOn(s) and DB().announce then
+					print("|cffd4a017Pint's|r New Character Setup: left-click now only targets; right-click loots. |cff909090(/setup to change)|r")
+				end
+			end
+		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		-- the chat frames finish setting up after login; set the class colours again on the login we set this character up
 		if NS.justApplied and DB().char.chatColors then ChatColors() end
