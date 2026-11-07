@@ -38,7 +38,19 @@ local function FitText(cd, reg)
 	if type(t) ~= "string" or (issecretvalue and issecretvalue(t)) then return end
 	local big, small = Sizes(cd)
 	local want = (#t <= SHORT_MAX) and big or small
-	if reg.pnsSize ~= want then reg.pnsSize = want; reg:SetFont(STANDARD_TEXT_FONT, want, FLAGS) end
+	-- a size we already shrank to so this many characters fit the button
+	if reg.pnsFitLen == #t and reg.pnsFit then want = math.min(want, reg.pnsFit) end
+	-- check the size it really has (the game can put the font back behind our backs), not just what we last set
+	local _, cur = reg:GetFont()
+	if not cur or math.abs(cur - want) > 0.5 then reg:SetFont(STANDARD_TEXT_FONT, want, FLAGS); cur = want end
+	reg.pnsSize = cur
+	-- never wider than the button: shrink until it fits
+	local w = cd.GetWidth and cd:GetWidth() or 0
+	local ok, sw = pcall(reg.GetStringWidth, reg)
+	if w > 0 and ok and type(sw) == "number" and not (issecretvalue and issecretvalue(sw)) and sw > w * 0.9 then
+		local fit = math.max(9, math.floor(cur * w * 0.9 / sw))
+		if fit < cur then reg:SetFont(STANDARD_TEXT_FONT, fit, FLAGS); reg.pnsSize = fit; reg.pnsFit, reg.pnsFitLen = fit, #t end
+	end
 end
 local function StyleRegions(cd)
 	local size, r, g, b = Look()
