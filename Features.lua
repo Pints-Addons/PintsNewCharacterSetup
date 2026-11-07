@@ -25,6 +25,9 @@ end
 
 local function StyleRegions(cd)
 	local size, r, g, b = Look()
+	-- never bigger than fits the button: "1:26" in the full size spilled well past small action buttons
+	local w = cd.GetWidth and cd:GetWidth() or 0
+	if w and w > 0 then size = math.max(8, math.min(size, math.floor(w * 0.36))) end
 	for _, reg in ipairs({ cd:GetRegions() }) do
 		if reg.GetObjectType and reg:GetObjectType() == "FontString" then
 			reg:SetFont(STANDARD_TEXT_FONT, size, FLAGS)

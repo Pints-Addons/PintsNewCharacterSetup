@@ -1,5 +1,9 @@
 Pint's New Character Setup - Changelog
 
+v1.0.1
+- Cooldown numbers never grow bigger than fits their button (a long cooldown's "1:26" spilled past small
+  action buttons).
+
 v1.0
 - First public release. Combines four small add-ons (Auto Loot On, Chat Class Colors, Cooldown Style, Stack Size).
 - Every new character starts with your chosen defaults: Auto Loot, cooldown numbers, class-coloured chat names,
