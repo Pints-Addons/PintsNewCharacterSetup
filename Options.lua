@@ -118,5 +118,7 @@ SLASH_PINTSSETUP2 = "/pns"
 SLASH_PINTSSETUP3 = "/newchar"
 SlashCmdList.PINTSSETUP = function(msg)
 	msg = (msg or ""):lower()
-	if msg == "apply" then NS.ApplyDefaults() else NS.OpenOptions() end
+	if msg == "apply" then NS.ApplyDefaults()
+	elseif msg == "cd" then NS.CooldownDump()
+	else NS.OpenOptions() end
 end

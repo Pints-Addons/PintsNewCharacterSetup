@@ -1,5 +1,9 @@
 Pint's New Character Setup - Changelog
 
+v1.0.5
+- WoW Forever: when the game hides a cooldown number from add-ons, it gets the smaller size (it was left at full size
+  and spilled off the button). /pns cd (hovering a button) shows what its cooldown number is.
+
 v1.0.4
 - Cooldown numbers on smaller action bars (e.g. bars 2 and 7) now shrink properly: 3+ characters ("23m") take the smaller
   size, and any number too wide for its button shrinks until it fits.

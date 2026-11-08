@@ -35,8 +35,16 @@ local function Sizes(cd)
 end
 local function FitText(cd, reg)
 	local t = reg:GetText()
-	if type(t) ~= "string" or (issecretvalue and issecretvalue(t)) then return end
 	local big, small = Sizes(cd)
+	if issecretvalue and issecretvalue(t) then
+		-- WoW Forever can hide the number from add-ons: then it can't be measured, so it gets the smaller size (which
+		-- always fits - "55m" at full size spilled off the button)
+		local _, cur = reg:GetFont()
+		if not cur or math.abs(cur - small) > 0.5 then reg:SetFont(STANDARD_TEXT_FONT, small, FLAGS) end
+		reg.pnsSize = small
+		return
+	end
+	if type(t) ~= "string" then return end
 	local want = (#t <= SHORT_MAX) and big or small
 	-- a size we already shrank to so this many characters fit the button
 	if reg.pnsFitLen == #t and reg.pnsFit then want = math.min(want, reg.pnsFit) end
@@ -52,10 +60,23 @@ local function FitText(cd, reg)
 		if fit < cur then reg:SetFont(STANDARD_TEXT_FONT, fit, FLAGS); reg.pnsSize = fit; reg.pnsFit, reg.pnsFitLen = fit, #t end
 	end
 end
+-- the countdown text: the cooldown's own font string (newer clients have a direct way to get it) and any others on it
+local function Texts(cd)
+	local out, seen = {}, {}
+	if cd.GetCountdownFontString then
+		local ok, fs = pcall(cd.GetCountdownFontString, cd)
+		if ok and fs then out[1] = fs; seen[fs] = true end
+	end
+	for _, reg in ipairs({ cd:GetRegions() }) do
+		if not seen[reg] and reg.GetObjectType and reg:GetObjectType() == "FontString" then out[#out + 1] = reg end
+	end
+	return out
+end
+NS.CooldownTexts = Texts
 local function StyleRegions(cd)
 	local size, r, g, b = Look()
-	for _, reg in ipairs({ cd:GetRegions() }) do
-		if reg.GetObjectType and reg:GetObjectType() == "FontString" then
+	for _, reg in ipairs(Texts(cd)) do
+		do
 			reg.pnsSize = size
 			reg:SetFont(STANDARD_TEXT_FONT, size, FLAGS)
 			reg:SetTextColor(r, g, b)
@@ -76,8 +97,8 @@ do
 		if not (PintsSetupDB and PintsSetupDB.cdStyle) then return end
 		for cd in pairs(styled) do
 			if cd:IsVisible() then
-				for _, reg in ipairs({ cd:GetRegions() }) do
-					if reg.GetObjectType and reg:GetObjectType() == "FontString" and reg:IsShown() then FitText(cd, reg) end
+				for _, reg in ipairs(Texts(cd)) do
+					if reg:IsShown() then FitText(cd, reg) end
 				end
 			end
 		end
@@ -163,3 +184,18 @@ else
 end
 
 NS.OnLoaded = function() NS.UpdateCooldownFont(); if NS.BuildOptions then NS.BuildOptions() end end
+
+-- /pns cd: hover an action button and type it - what its cooldown number is (for bug reports)
+function NS.CooldownDump()
+	local f = GetMouseFoci and GetMouseFoci()[1] or (GetMouseFocus and GetMouseFocus())
+	local cd = f and (f.cooldown or f.Cooldown or (f.GetName and f:GetName() and _G[f:GetName() .. "Cooldown"]))
+	local P = function(m) print("|cffd4a017New Character Setup:|r " .. m) end
+	if not cd then P("hover an action button with a cooldown running, then type /pns cd") return end
+	P(("%s  styled=%s  width=%s  scale=%.2f"):format(f:GetName() or "?", tostring(styled[cd] or false), tostring(cd:GetWidth()), cd:GetEffectiveScale()))
+	for i, reg in ipairs(Texts(cd)) do
+		local t = reg:GetText()
+		local sec = issecretvalue and issecretvalue(t)
+		local _, size = reg:GetFont()
+		P(("  text %d: %s  shown=%s  font=%s"):format(i, sec and "<hidden by the game>" or tostring(t), tostring(reg:IsShown()), tostring(size)))
+	end
+end
