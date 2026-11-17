@@ -24,6 +24,7 @@ local DEFAULTS = {
 	cdStyle = true, cdSize = 26, cdColor = 1,   -- cooldown number style (size, colour preset)
 	tipStack = true, tipUsedIn = true,          -- tooltip lines
 	announce = true,                            -- say in chat what was set up on a new character
+	welcome = true,                             -- a new character's first login: a window to tick what to turn on (off: just turn on the defaults)
 }
 NS.COLORS = {
 	{ "Yellow", 1, 0.82, 0 }, { "White", 1, 1, 1 }, { "Orange", 1, 0.5, 0.1 }, { "Green", 0.3, 1, 0.3 }, { "Light blue", 0.4, 0.8, 1 },
@@ -65,12 +66,14 @@ local function TurnOn(s)
 	return true
 end
 
--- apply every ticked default to the character you're on
-function NS.ApplyDefaults(quiet)
+-- apply every ticked default to the character you're on (picks: this time only, ticked in the new-character window)
+function NS.ApplyDefaults(quiet, picks)
+	local want = picks or DB().char
 	local done = {}
 	for _, s in ipairs(CHAR) do
-		if DB().char[s[1]] and TurnOn(s) then done[#done + 1] = s[2] end
+		if want[s[1]] and TurnOn(s) then done[#done + 1] = s[2] end
 	end
+	if picks and picks.chatColors then NS.chatLater = true end
 	PintsSetupCharDB.setUp = true
 	NS.justApplied = true
 	if not quiet and DB().announce then
@@ -95,8 +98,11 @@ f:SetScript("OnEvent", function(self, event, arg)
 		PintsSetupCharDB = PintsSetupCharDB or {}
 		if NS.OnLoaded then NS.OnLoaded() end
 	elseif event == "PLAYER_LOGIN" then
-		-- a character's first login with this add-on: give it the defaults
-		if not PintsSetupCharDB.setUp then NS.ApplyDefaults() end
+		-- a character's first login with this add-on: show the new-character window (or just give it the defaults)
+		if not PintsSetupCharDB.setUp then
+			PintsSetupCharDB.leftClickDone = true          -- (the window / the defaults cover it)
+			if DB().welcome ~= false and NS.ShowWelcome then C_Timer.After(2, NS.ShowWelcome) else NS.ApplyDefaults() end
+		end
 		-- 1.0.1: "left-click only targets" is new - give it once to characters set up before it existed
 		if not PintsSetupCharDB.leftClickDone then
 			PintsSetupCharDB.leftClickDone = true

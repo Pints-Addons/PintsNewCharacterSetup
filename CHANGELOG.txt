@@ -1,5 +1,12 @@
 Pint's New Character Setup - Changelog
 
+v1.0.6
+- New-character window: a character's first login shows a checklist of the settings it can start with (ticked as you
+  chose in /setup). Untick any you don't want, then Turn on. Not now asks again next login; Skip leaves the character as
+  it is. You can also make your ticks the defaults for future characters, or turn the window off (new characters then
+  just get your defaults, as before). /setup welcome or "Show it now" in the options shows it any time.
+- Characters that were already set up never see it.
+
 v1.0.5
 - WoW Forever: when the game hides a cooldown number from add-ons, it gets the smaller size (it was left at full size
   and spilled off the button). /pns cd (hovering a button) shows what its cooldown number is.

@@ -98,7 +98,13 @@ function NS.BuildOptions()
 	ui:SetPoint("TOPLEFT", 20, y); y = y - 34
 
 	local an = Check(panel, "Say in chat what was set up on a new character", nil, function() return db.announce end, function(v) db.announce = v end)
-	an:SetPoint("TOPLEFT", 20, y)
+	an:SetPoint("TOPLEFT", 20, y); y = y - 26
+	local wl = Check(panel, "Show a checklist on a new character's first login",
+		"A window lists the settings above, ticked as you've chosen here. Untick any you don't want on that character, then Turn on. Unticked: new characters just get the settings ticked above, no window.",
+		function() return db.welcome ~= false end, function(v) db.welcome = v end)
+	wl:SetPoint("TOPLEFT", 20, y)
+	local prev = Button(panel, "Show it now", 110); prev:SetPoint("LEFT", wl.label, "RIGHT", 12, 0)
+	prev:SetScript("OnClick", function() if NS.ShowWelcome then NS.ShowWelcome(true) end end)
 
 	if Settings and Settings.RegisterCanvasLayoutCategory then
 		category = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
@@ -119,6 +125,7 @@ SLASH_PINTSSETUP3 = "/newchar"
 SlashCmdList.PINTSSETUP = function(msg)
 	msg = (msg or ""):lower()
 	if msg == "apply" then NS.ApplyDefaults()
+	elseif msg == "welcome" then NS.ShowWelcome(true)
 	elseif msg == "cd" then NS.CooldownDump()
 	else NS.OpenOptions() end
 end

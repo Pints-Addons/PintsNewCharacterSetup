@@ -23,7 +23,10 @@ HOW TO USE
     [x] Maximum camera distance
     [x] Track quests when accepted
     [ ] Open loot window at mouse
-  Each character gets these on its first login with the add-on (it says in chat what it turned on).
+  Each character's first login with the add-on shows a checklist window with these ticked: untick any you
+  don't want on that character and press Turn on (Not now = ask next login, Skip = leave it as it is).
+  Turn the window off in the options and new characters just get these, saying in chat what it turned on.
+  /setup welcome shows the window any time.
   After that you can change them on that character as normal - the add-on won't switch them back.
   "Apply to this character now" (or /setup apply) turns them on for the character you're playing.
 
